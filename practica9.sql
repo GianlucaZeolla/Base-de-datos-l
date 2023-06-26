@@ -64,4 +64,29 @@ FROM empleado e, proyecto p, semana_completa sc
 WHERE e.emp_id IN (4,5)
 AND p.pro_id IN (3,4)
 AND sc.fecha IN (SELECT fecha FROM semana_completa); 
+/*6.	Determinar por medio de una consulta cuáles son los proyectos en los cuales trabajaron más de dos empleados*/
+SELECT p.pro_descripcion, COUNT(DISTINCT a.emp_id) FROM proyecto p 
+INNER JOIN empleado e ON p.pro_id=e.emp_id 
+INNER JOIN asignacion a ON e.emp_id=a.emp_id
+GROUP BY p.pro_id
+HAVING COUNT(DISTINCT e.emp_id)>2;
+DESCRIBE empleado;
+
+/*7.	Crear una tabla RESUMEN_PROYECTO, con esquema < pro_id: int, pro_descripcion: varchar(255), horas_totales:double, cantidad_empleados: int >, y lograr que contenga por cada fila a cada proyecto, la cantidad total de horas trabajadas para tal proyecto y la cantidad de empleados involucrados en el mismo*/ 
+CREATE TABLE resumen_proyecto (
+pro_id INT,
+pro_descripcion VARCHAR(255),
+horas_totales DOUBLE,
+cantidad_empleados INT
+);
+INSERT INTO resumen_proyecto (pro_id, pro_descripcion, horas_totales, cantidad_empleados)
+SELECT p.pro_id, p.pro_descripcion, SUM(a.asi_cant_horas), COUNT(DISTINCT a.emp_id) FROM asignacion a 
+INNER JOIN proyecto p ON a.pro_id= p.pro_id
+GROUP BY p.pro_id; 
+
+SELECT * FROM resumen_proyecto;
+
+/*8.	Generar una consulta SQL para obtener los empleados que no estén asignados a ningún proyecto*/
+SELECT e.emp_id FROM empleado e WHERE NOT EXISTS (SELECT a.pro_id FROM asignacion a WHERE e.emp_id=a.emp_id); 
+SELECT * FROM empleado;
 
