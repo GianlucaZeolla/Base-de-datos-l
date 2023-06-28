@@ -1,7 +1,7 @@
 CREATE DATABASE practica9;
 USE practica9;
 
-/*1.	Crear las tablas*/
+/*1.	Crear las tablas*//
 
 CREATE TABLE empleado (
 emp_id INT,
