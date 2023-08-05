@@ -90,4 +90,36 @@ INNER JOIN estadio e ON s.nombreEstadio = e.nombre
 WHERE e.ubicacion = 'Estadio de La Plata'
 GROUP BY b.nombre
 HAVING COUNT(DISTINCT e.ubicacion) = 1;
-/*obtener el nombre de los musicos que hayan ticadi en algun estadio ubicado en su ciudad de origen */
+/*obtener el nombre de los musicos que hayan tocado en algun estadio ubicado en su ciudad de origen */
+SELECT DISTINCT m.nombre AS nombreMusico
+FROM musico m
+
+inner JOIN pertenece p ON m.nombre = p.nombreMusico
+inner JOIN banda b ON p.nombreBanda = b.nombre
+inner JOIN shows s ON b.nombre = s.nombreBanda
+inner JOIN estadio e ON s.nombreEstadio = e.nombre
+
+WHERE m.origen = e.ubicacion;
+
+/*realizar una vista "VISTASHOW" con el "nombre de la banda", "nombre estadio" y la fecha del show, edad de la banda y un dato estado para determinar el estado de cada show:
++si la fecha del show es mayor o igual a '2023-01-01', se asigna el estado "futuro"
++si la decha del show es menor a '2023-02-02' se asigna el estado "pasado" 
++si ninguna de estas condiciones se cumple, se asigna el estado "desconocido"*/
+CREATE VIEW VISTASHOW AS
+SELECT 
+    b.nombre AS nombreBanda,
+    s.nombreEstadio,
+    s.fecha AS fechaShow,
+    YEAR(CURDATE()) - YEAR(b.fechaFormacion) AS edadBanda,
+    CASE
+        WHEN s.fecha >= '2023-01-01' THEN 'futuro'
+        WHEN s.fecha < '2023-02-02' THEN 'pasado'
+        ELSE 'desconocido'
+    END AS estado
+FROM
+    shows s
+JOIN banda b ON s.nombreBanda = b.nombre
+JOIN estadio e ON s.nombreEstadio = e.nombre;
+
+select * from vistaShow;
+
